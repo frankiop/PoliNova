@@ -1,0 +1,60 @@
+import sys
+import json
+import csv
+from typing import Optional, Dict, List
+from collections import deque
+from pathlib import Path
+from datetime import datetime
+
+from PyQt5.QtWidgets import (
+    QApplication,
+    QWidget,
+    QPushButton,
+    QVBoxLayout,
+    QLabel,
+    QHBoxLayout,
+    QPlainTextEdit,
+    QGridLayout,
+    QFrame,
+    QListWidget,
+    QCheckBox,
+    QTabWidget,
+    QScrollArea,
+    QComboBox,
+    QDialog,
+    QDialogButtonBox,
+    QProgressBar,
+    QSlider,
+    QGroupBox,
+    QFileDialog
+)
+from PyQt5.QtCore import Qt, QProcess, QTimer, QSize, QRectF
+from PyQt5.QtGui import QColor, QPainter, QPen, QFont
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_pdf import PdfPages
+from matplotlib.figure import Figure
+
+LOG_INTERVAL_FRAMES = 12  # Cada cuantos frames escribimos un resumen en consola
+TIMELINE_MAX_ITEMS = 120  # Maximo de eventos visibles en la linea de tiempo
+FRAME_THRESHOLD = 50  # Valor por defecto de frames cerrados para alerta
+CONTROL_FILE = Path(__file__).with_name("control_state.json")  # Archivo compartido con el detector
+# Estado inicial que sincroniza overlays y ajustes con angulo.py
+
+
+#configuracion predefinida si no logra leer el archivo json-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DEFAULT_CONTROL_STATE = {
+    "recalibrate_token": 0,
+    "overlays": {
+        "landmarks": True,
+        "geometry": True,
+        "text": True,
+    },
+    "settings": {
+        "ear_dynamic_ratio": 0.92,
+        "frame_threshold": 50,
+        "pitch_forward_threshold": 10.0,
+        "pitch_backward_threshold": -12.0,
+        "sound_alert": True,
+        "visual_alert": True,
+        "presentation_mode": False,
+    },
