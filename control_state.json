@@ -11,7 +11,6 @@
     "pitch_forward_threshold": 10.0,
     "pitch_backward_threshold": -15.0,
     "sound_alert": true,
-    "visual_alert": true,
-    "presentation_mode": false
+    "visual_alert": true
   }
 }

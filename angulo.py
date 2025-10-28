@@ -4,6 +4,8 @@ import winsound
 import cv2
 import mediapipe as mp
 import numpy as np
+import matplotlib.pyplot as plt 
+from collections import deque 
 import json
 from math import acos, degrees
 from collections import deque

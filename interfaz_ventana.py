@@ -599,7 +599,9 @@ class VentanaPrincipal(QWidget):
         self.status_label.setText("Proceso finalizado")
         self.boton_iniciar.setEnabled(True)
         self.boton_detener.setEnabled(False)
-        self.proceso = None
+        self.proceso = None  
+
+        
 
     def reset_metrics(self) -> None:
         """Resetea buffers para una nueva sesion."""
