@@ -2,6 +2,7 @@ import sys
 import json
 from typing import Optional, List
 from pathlib import Path
+from graficas import grafica
 
 from PyQt5.QtWidgets import (
     QApplication,
@@ -16,7 +17,7 @@ from PyQt5.QtWidgets import (
     QFrame,
     QGraphicsDropShadowEffect,
 )
-from PyQt5.QtCore import Qt, QProcess, QPoint
+from PyQt5.QtCore import Qt, QProcess, QPoint, QTimer
 from PyQt5.QtGui import QColor
 
 LOG_INTERVAL_FRAMES = 12  # Cada cuantos frames escribimos un resumen en el log
@@ -63,6 +64,11 @@ class VentanaPrincipal(QWidget):
     def __init__(self) -> None:
         """Inicializa estados, buffers y lanza la construccion de la interfaz"""
         super().__init__()
+        self.ear_series: List[float] = []  # Serie temporal de EAR para graficar
+        self.ear_baseline_series: List[float] = []  # Serie temporal de EAR baseline para graficar
+        self.timer_grafica = QTimer(self)
+        self.timer_grafica.setInterval(500)
+        self.timer_grafica.timeout.connect(self._refrescar_grafica)
         self.proceso: Optional[QProcess] = None  # Handler del proceso lanzado
         self.stdout_buffer = ""  # Buffer para reconstruir lineas parciales
         self.control_state = self.ensure_control_state()  # Preferencias leidas de control_state.json
@@ -113,6 +119,10 @@ class VentanaPrincipal(QWidget):
         self.status_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         self.status_label.setWordWrap(True)
 
+
+        self.boton_grafica = QPushButton("Mostrar grafica")
+        self.boton_grafica.clicked.connect(self.mostrar_grafica)
+
         self.boton_iniciar = QPushButton("Iniciar angulo.py")
         self.boton_iniciar.setObjectName("iniciar")
         self.boton_iniciar.clicked.connect(self.iniciar_script)
@@ -129,6 +139,7 @@ class VentanaPrincipal(QWidget):
         botones_layout.setSpacing(12)
         botones_layout.addStretch(1)
         botones_layout.addWidget(self.boton_iniciar)
+        botones_layout.addWidget(self.boton_grafica)
         botones_layout.addWidget(self.boton_detener)
 
         card_layout.addLayout(header_layout)
@@ -531,6 +542,7 @@ class VentanaPrincipal(QWidget):
             resumen.append(f"Postura: {inclinacion}")
         if pitch is not None:
             resumen.append(f"Pitch: {self.formatear_float(pitch, 1)} deg")
+        
         if closed_frames is not None:
             try:
                 resumen.append(f"Cerrados: {int(closed_frames)}")
@@ -545,6 +557,38 @@ class VentanaPrincipal(QWidget):
             self.status_label.setText(" | ".join(resumen))
         else:
             self.status_label.setText("Recibiendo datos...")
+
+        ear = datos.get("ear_smoothed")
+        ear_thr = datos.get("ear_threshold")
+        if ear is not None:
+            self.ear_series.append(float(ear))
+            if len(self.ear_series) > 600:
+                del self.ear_series[0]
+        if ear_thr is not None:
+            self.ear_baseline_series.append(float(ear_thr))
+            if len(self.ear_baseline_series) > 600:
+                del self.ear_baseline_series[0]
+
+    def _refrescar_grafica(self) -> None:
+        """Actualiza la ventana de Matplotlib con las series acumuladas."""
+        if not self.ear_series or not self.ear_baseline_series:
+            return
+        grafica(
+            list(self.ear_baseline_series),
+            list(self.ear_series),
+        )
+
+    def mostrar_grafica(self) -> None:
+        """Invoca la grafica de EAR si existen datos acumulados."""
+        if not self.ear_series or not self.ear_baseline_series:
+            self.append_line("[WARN] Aun no hay datos suficientes para graficar.")
+            self.status_label.setText("Sin datos para graficar")
+            return
+
+        self._refrescar_grafica()
+        if not self.timer_grafica.isActive():
+            self.timer_grafica.start()
+
 
     def on_overlay_toggle(self, key: str, state: int) -> None:
         """Guarda el estado de cada overlay y registra la accion en el log."""
@@ -592,6 +636,7 @@ class VentanaPrincipal(QWidget):
             self.status_label.setText("angulo.py detenido")
             self.boton_iniciar.setEnabled(True)
             self.boton_detener.setEnabled(False)
+            self.timer_grafica.stop()
 
     def proceso_termino(self, exitCode: int, exitStatus: QProcess.ExitStatus) -> None:
         """Gestiona el cierre natural del proceso e informa en UI"""
@@ -608,9 +653,13 @@ class VentanaPrincipal(QWidget):
         self.stdout_buffer = ""
         self.last_logged_frame = -LOG_INTERVAL_FRAMES
         self.status_label.setText("Esperando datos del detector...")
+        self.timer_grafica.stop()
+        self.ear_series.clear()
+        self.ear_baseline_series.clear()
 
     def closeEvent(self, event) -> None:  # type: ignore[override]
         """Detiene el proceso al cerrar la ventana para evitar zombies"""
+        self.timer_grafica.stop()
         try:
             self.detener_script()
         finally:

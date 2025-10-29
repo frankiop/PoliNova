@@ -94,7 +94,6 @@ def ensure_control_state_file() -> dict:
         CONTROL_FILE.write_text(json.dumps(DEFAULT_CONTROL_STATE, indent=2))
         return DEFAULT_CONTROL_STATE.copy()
 
-
 def load_control_state(previous_state: dict) -> dict:
     try:
         data = json.loads(CONTROL_FILE.read_text())
@@ -128,6 +127,9 @@ def load_control_state(previous_state: dict) -> dict:
     except Exception:
         pass
     return previous_state
+
+
+
 
 # Inicializar MediaPipe Face Mesh
 mp_face_mesh = mp.solutions.face_mesh
@@ -428,6 +430,7 @@ with mp_face_mesh.FaceMesh(
                 print(json.dumps(metrics_payload), flush=True)
         else:
             closed_frames = 0
+
 
         # Mostrar el video en una ventana
         cv2.imshow("Video.Capture", frame)
