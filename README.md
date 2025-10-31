@@ -6,5 +6,7 @@ usando python y el frame work mas importante OpenCV
 Instala eso para que ejecute el codigo 
 
 pip install opencv-python
+
 pip install mediapipe
+
 pip install PyQt5
