@@ -67,7 +67,7 @@ class VentanaPrincipal(QWidget):
         self.ear_series: List[float] = []  # Serie temporal de EAR para graficar
         self.ear_baseline_series: List[float] = []  # Serie temporal de EAR baseline para graficar
         self.timer_grafica = QTimer(self)
-        self.timer_grafica.setInterval(500)
+        self.timer_grafica.setInterval(100)
         self.timer_grafica.timeout.connect(self._refrescar_grafica)
         self.proceso: Optional[QProcess] = None  # Handler del proceso lanzado
         self.stdout_buffer = ""  # Buffer para reconstruir lineas parciales
@@ -168,16 +168,16 @@ class VentanaPrincipal(QWidget):
         self.checkbox_landmarks.setChecked(overlays.get("landmarks", True))
         self.checkbox_landmarks.stateChanged.connect(lambda state: self.on_overlay_toggle("landmarks", state))
 
-        self.checkbox_geometry = QCheckBox("Geometria")
-        self.checkbox_geometry.setChecked(overlays.get("geometry", True))
-        self.checkbox_geometry.stateChanged.connect(lambda state: self.on_overlay_toggle("geometry", state))
+        # self.checkbox_geometry = QCheckBox("Geometria")
+        # self.checkbox_geometry.setChecked(overlays.get("geometry", True))
+        # self.checkbox_geometry.stateChanged.connect(lambda state: self.on_overlay_toggle("geometry", state))
 
         self.checkbox_text = QCheckBox("Textos")
         self.checkbox_text.setChecked(overlays.get("text", True))
         self.checkbox_text.stateChanged.connect(lambda state: self.on_overlay_toggle("text", state))
 
         overlay_layout.addWidget(self.checkbox_landmarks)
-        overlay_layout.addWidget(self.checkbox_geometry)
+        # overlay_layout.addWidget(self.checkbox_geometry)
         overlay_layout.addWidget(self.checkbox_text)
         overlay_layout.addStretch(1)
         layout.addLayout(overlay_layout)

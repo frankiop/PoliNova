@@ -249,51 +249,51 @@ with mp_face_mesh.FaceMesh(
         coordinates_right_eye = []
         d_eyes = None
 
-        if resultados.detections is not None:
-            for detection in resultados.detections:
-                # ojo 1
-                x1 = int(detection.location_data.relative_keypoints[0].x * width)
-                y1 = int(detection.location_data.relative_keypoints[0].y * height)
+        # if resultados.detections is not None:
+        #     for detection in resultados.detections:
+        #         # ojo 1
+        #         x1 = int(detection.location_data.relative_keypoints[0].x * width)
+        #         y1 = int(detection.location_data.relative_keypoints[0].y * height)
 
-                # ojo 2
-                x2 = int(detection.location_data.relative_keypoints[1].x * width)
-                y2 = int(detection.location_data.relative_keypoints[1].y * height)
+        #         # ojo 2
+        #         x2 = int(detection.location_data.relative_keypoints[1].x * width)
+        #         y2 = int(detection.location_data.relative_keypoints[1].y * height)
 
-                # angulo
-                p1 = np.array([x1, y1])
-                p2 = np.array([x2, y2])
-                p3 = np.array([x2, y1])
+        #         # angulo
+        #         p1 = np.array([x1, y1])
+        #         p2 = np.array([x2, y2])
+        #         p3 = np.array([x2, y1])
 
-                # Calcular las distancias entre los puntos
-                d_eyes = np.linalg.norm(p1 - p2)  # Distancia entre los ojos (base del triangulo)
-                l1 = np.linalg.norm(p1 - p3)      # Lado 1 del triangulo
+        #         # Calcular las distancias entre los puntos
+        #         d_eyes = np.linalg.norm(p1 - p2)  # Distancia entre los ojos (base del triangulo)
+        #         l1 = np.linalg.norm(p1 - p3)      # Lado 1 del triangulo
 
-                # calculando angulo
-                if d_eyes > 1e-5:
-                    ratio = np.clip(l1 / d_eyes, -1.0, 1.0)
-                    angulo = degrees(acos(ratio))
-                else:
-                    angulo = 0.0
+        #         # calculando angulo
+        #         if d_eyes > 1e-5:
+        #             ratio = np.clip(l1 / d_eyes, -1.0, 1.0)
+        #             angulo = degrees(acos(ratio))
+        #         else:
+        #             angulo = 0.0
 
-                eye_angle = angulo
+        #         eye_angle = angulo
 
-                # visualizar datos
-                if show_text:
-                    cv2.putText(frame, "ojo1", (x1 - 60, y1), 1, 1.5, (0, 255, 0), 2)
-                    cv2.putText(frame, "ojo2", (x2 + 10, y2), 1, 1.5, (0, 128, 255), 2)
-                    cv2.putText(frame, f"Angulo: {int(angulo)}", (20, height - 20), 1, 1.5, (255, 0, 0), 2)
+        #         # visualizar datos
+        #         if show_text:
+        #             cv2.putText(frame, "ojo1", (x1 - 60, y1), 1, 1.5, (0, 255, 0), 2)
+        #             cv2.putText(frame, "ojo2", (x2 + 10, y2), 1, 1.5, (0, 128, 255), 2)
+        #             cv2.putText(frame, f"Angulo: {int(angulo)}", (20, height - 20), 1, 1.5, (255, 0, 0), 2)
 
-                if show_geometry:
-                    cv2.line(frame, (x1, y1), (x2, y2), (255, 0, 255), 2)  # base
-                    cv2.line(frame, (x1, y1), (x2, y1), (211, 0, 148), 2)
-                    cv2.line(frame, (x2, y2), (x2, y1), (0, 128, 255), 2)
+        #         if show_geometry:
+        #             cv2.line(frame, (x1, y1), (x2, y2), (255, 0, 255), 2)  # base
+        #             cv2.line(frame, (x1, y1), (x2, y1), (211, 0, 148), 2)
+        #             cv2.line(frame, (x2, y2), (x2, y1), (0, 128, 255), 2)
 
-                if show_landmarks:
-                    cv2.circle(frame, (x1, y1), 5, (0, 255, 0), -1)
-                    cv2.circle(frame, (x2, y2), 5, (0, 128, 255), -1)
-                    cv2.circle(frame, (x2, y1), 5, (255, 0, 0), -1)
+        #         if show_landmarks:
+        #             cv2.circle(frame, (x1, y1), 5, (0, 255, 0), -1)
+        #             cv2.circle(frame, (x2, y2), 5, (0, 128, 255), -1)
+        #             cv2.circle(frame, (x2, y1), 5, (255, 0, 0), -1)
 
-                break
+        #         break
 
         if results.multi_face_landmarks is not None:
             for face_landmarks in results.multi_face_landmarks:
@@ -364,56 +364,56 @@ with mp_face_mesh.FaceMesh(
 
                         if closed_frames >= frame_threshold_cfg:
                             if visual_alert_enabled and show_text:
-                                cv2.putText(frame, "Durmiendo", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+                                cv2.putText(frame, "ALERTA", (75, 75), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
                             if sound_alert_enabled:
                                 winsound.Beep(1000, 100)
 
-                # Calcular inclinacion de la cabeza (pitch)
-                idx_barbilla = 152
-                idx_nariz = 1
-                x_barbilla = int(face_landmarks.landmark[idx_barbilla].x * width)
-                y_barbilla = int(face_landmarks.landmark[idx_barbilla].y * height)
-                x_nariz = int(face_landmarks.landmark[idx_nariz].x * width)
-                y_nariz = int(face_landmarks.landmark[idx_nariz].y * height)
+                # # Calcular inclinacion de la cabeza (pitch)
+                # idx_barbilla = 152
+                # idx_nariz = 1
+                # x_barbilla = int(face_landmarks.landmark[idx_barbilla].x * width)
+                # y_barbilla = int(face_landmarks.landmark[idx_barbilla].y * height)
+                # x_nariz = int(face_landmarks.landmark[idx_nariz].x * width)
+                # y_nariz = int(face_landmarks.landmark[idx_nariz].y * height)
 
-                if show_landmarks:
-                    cv2.circle(frame, (x_barbilla, y_barbilla), 5, (255, 0, 0), -1)
-                if show_text:
-                    cv2.putText(frame, "Barbilla", (x_barbilla + 10, y_barbilla), 0, 0.7, (255, 0, 0), 2)
-                if show_landmarks:
-                    cv2.circle(frame, (x_nariz, y_nariz), 5, (0, 0, 255), -1)
-                if show_text:
-                    cv2.putText(frame, "Nariz", (x_nariz + 10, y_nariz), 0, 0.7, (0, 0, 255), 2)
+                # if show_landmarks:
+                #     cv2.circle(frame, (x_barbilla, y_barbilla), 5, (255, 0, 0), -1)
+                # if show_text:
+                #     cv2.putText(frame, "Barbilla", (x_barbilla + 10, y_barbilla), 0, 0.7, (255, 0, 0), 2)
+                # if show_landmarks:
+                #     cv2.circle(frame, (x_nariz, y_nariz), 5, (0, 0, 255), -1)
+                # if show_text:
+                #     cv2.putText(frame, "Nariz", (x_nariz + 10, y_nariz), 0, 0.7, (0, 0, 255), 2)
 
-                if show_geometry:
-                    cv2.line(frame, (x_nariz, y_nariz), (x_barbilla, y_barbilla), (0, 255, 255), 2)
+                # if show_geometry:
+                #     cv2.line(frame, (x_nariz, y_nariz), (x_barbilla, y_barbilla), (0, 255, 255), 2)
 
-                delta_y = y_barbilla - y_nariz
-                reference = d_eyes if d_eyes and d_eyes > 1e-5 else None
-                if reference is None and coordinates_left_eye and coordinates_right_eye:
-                    left_center = np.mean(np.array(coordinates_left_eye), axis=0)
-                    right_center = np.mean(np.array(coordinates_right_eye), axis=0)
-                    reference = float(np.linalg.norm(left_center - right_center))
-                if reference is None or reference < 1e-5:
-                    reference = 1.0
-                pitch_angle = np.degrees(np.arctan2(delta_y, reference))
-                pitch_angle_value = float(pitch_angle)
+                # delta_y = y_barbilla - y_nariz
+                # reference = d_eyes if d_eyes and d_eyes > 1e-5 else None
+                # if reference is None and coordinates_left_eye and coordinates_right_eye:
+                #     left_center = np.mean(np.array(coordinates_left_eye), axis=0)
+                #     right_center = np.mean(np.array(coordinates_right_eye), axis=0)
+                #     reference = float(np.linalg.norm(left_center - right_center))
+                # if reference is None or reference < 1e-5:
+                #     reference = 1.0
+                # pitch_angle = np.degrees(np.arctan2(delta_y, reference))
+                # pitch_angle_value = float(pitch_angle)
 
-                if show_text:
-                    cv2.putText(frame, f"Pitch: {pitch_angle:.1f}", (20, height - 80), 1, 1.5, (0, 128, 255), 2)
+                # if show_text:
+                #     cv2.putText(frame, f"Pitch: {pitch_angle:.1f}", (20, height - 80), 1, 1.5, (0, 128, 255), 2)
 
-                if pitch_angle > pitch_forward_threshold:
-                    inclinacion = "Cabeza hacia adelante"
-                    inclinacion_value = inclinacion
-                elif pitch_angle < pitch_backward_threshold:
-                    inclinacion = "Cabeza hacia atras"
-                    inclinacion_value = inclinacion
-                else:
-                    inclinacion = "Cabeza neutra"
-                    inclinacion_value = inclinacion
+                # if pitch_angle > pitch_forward_threshold:
+                #     inclinacion = "Cabeza hacia adelante"
+                #     inclinacion_value = inclinacion
+                # elif pitch_angle < pitch_backward_threshold:
+                #     inclinacion = "Cabeza hacia atras"
+                #     inclinacion_value = inclinacion
+                # else:
+                #     inclinacion = "Cabeza neutra"
+                #     inclinacion_value = inclinacion
 
-                if show_text:
-                    cv2.putText(frame, f"Inclinacion: {inclinacion}", (20, height - 50), 1, 1.5, (0, 0, 255), 2)
+                # if show_text:
+                #     cv2.putText(frame, f"Inclinacion: {inclinacion}", (20, height - 50), 1, 1.5, (0, 0, 255), 2)
 
                 metrics_payload = {
                     "frame": frame_counter,
