@@ -10,3 +10,5 @@ pip install opencv-python
 pip install mediapipe
 
 pip install PyQt5
+
+pip install playsound
