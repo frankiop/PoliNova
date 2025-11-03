@@ -2,16 +2,12 @@
   "recalibrate_token": 1,
   "overlays": {
     "landmarks": true,
-    "geometry": true,
     "text": true
   },
   "settings": {
     "ear_dynamic_ratio": 0.85,
     "frame_threshold": 50,
-    "pitch_forward_threshold": 10.0,
-    "pitch_backward_threshold": -15.0,
-    "sound_alert": false,
-    "visual_alert": true,
-    "presentation_mode": false
+    "sound_alert": true,
+    "visual_alert": true
   }
 }
