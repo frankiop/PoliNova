@@ -29,18 +29,13 @@ CONTROL_FILE = Path(__file__).with_name("control_state.json")  # Archivo compart
 DEFAULT_CONTROL_STATE = {
     "recalibrate_token": 0,
     "overlays": {
-        "landmarks": True,
         "geometry": True,
         "text": True,
     },
     "settings": {
         "ear_dynamic_ratio": 0.92,
-        "frame_threshold": 50,
-        "pitch_forward_threshold": 10.0,
-        "pitch_backward_threshold": -12.0,
         "sound_alert": True,
-        "visual_alert": True,
-        "presentation_mode": False,
+        "visual_alert": True
     },
 }
 #TERMINA LA CONFIGURACION PREDEFINIDA-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -74,7 +69,6 @@ class VentanaPrincipal(QWidget):
         self.control_state = self.ensure_control_state()  # Preferencias leidas de control_state.json
         self.last_logged_frame = -LOG_INTERVAL_FRAMES  # Frame usado para muestrear logs
         settings = self.control_state.get("settings", {})  # Preferencias personalizadas del usuario
-        self.presentation_mode_enabled = bool(settings.get("presentation_mode", False))  # Flag de modo presentacion
         self.theme_name = "dark"  # Tema visual fijo en modo oscuro
         self._drag_pos: Optional[QPoint] = None  # Soporta arrastre de ventana flotante
         self.initUI()
@@ -84,14 +78,14 @@ class VentanaPrincipal(QWidget):
         self.setWindowTitle("Control de angulo.py")
         self.setWindowFlags(self.windowFlags() | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground, True)
-        self.resize(540, 620)
+        self.resize(840, 620)#tamano de la ventana
 
-        self.boton_cerrar = QPushButton("×", self)
+        self.boton_cerrar = QPushButton("×", self)#boton para cerrar la ventana 
         self.boton_cerrar.setObjectName("cerrar")
         self.boton_cerrar.clicked.connect(self.close)
 
         root_layout = QVBoxLayout(self)
-        root_layout.setContentsMargins(18, 18, 18, 18)
+        root_layout.setContentsMargins(18, 118, 18, 18)
 
         card = QFrame()
         card.setObjectName("card")
@@ -114,7 +108,7 @@ class VentanaPrincipal(QWidget):
         header_layout.addStretch(1)
         header_layout.addWidget(self.boton_cerrar)
 
-        self.status_label = QLabel("Presiona iniciar para ejecutar angulo.py")
+        self.status_label = QLabel("Presiona iniciar para ejecutar deteccion")
         self.status_label.setObjectName("status")
         self.status_label.setAlignment(Qt.AlignLeft | Qt.AlignVCenter)
         self.status_label.setWordWrap(True)
@@ -123,11 +117,11 @@ class VentanaPrincipal(QWidget):
         self.boton_grafica = QPushButton("Mostrar grafica")
         self.boton_grafica.clicked.connect(self.mostrar_grafica)
 
-        self.boton_iniciar = QPushButton("Iniciar angulo.py")
+        self.boton_iniciar = QPushButton("Iniciar")
         self.boton_iniciar.setObjectName("iniciar")
         self.boton_iniciar.clicked.connect(self.iniciar_script)
 
-        self.boton_detener = QPushButton("Detener angulo.py")
+        self.boton_detener = QPushButton("Detener Deteccion")
         self.boton_detener.setObjectName("detener")
         self.boton_detener.clicked.connect(self.detener_script)
         self.boton_detener.setEnabled(False)
@@ -168,9 +162,7 @@ class VentanaPrincipal(QWidget):
         self.checkbox_landmarks.setChecked(overlays.get("landmarks", True))
         self.checkbox_landmarks.stateChanged.connect(lambda state: self.on_overlay_toggle("landmarks", state))
 
-        # self.checkbox_geometry = QCheckBox("Geometria")
-        # self.checkbox_geometry.setChecked(overlays.get("geometry", True))
-        # self.checkbox_geometry.stateChanged.connect(lambda state: self.on_overlay_toggle("geometry", state))
+        
 
         self.checkbox_text = QCheckBox("Textos")
         self.checkbox_text.setChecked(overlays.get("text", True))
@@ -193,7 +185,7 @@ class VentanaPrincipal(QWidget):
         settings = self.control_state.get("settings", DEFAULT_CONTROL_STATE["settings"]).copy()
 
         sensibilidad_group = QGroupBox("Sensibilidad ocular")
-        sensibilidad_group.setStyleSheet("color: #3498db;")
+        sensibilidad_group.setStyleSheet("color: #3498db;")#Color del texto  EAR y Frames (sensibilidad ocular)
         sensibilidad_layout = QVBoxLayout(sensibilidad_group)
         sensibilidad_layout.setSpacing(12) #espacion entre los controles
 
@@ -465,7 +457,7 @@ class VentanaPrincipal(QWidget):
         self.proceso.finished.connect(self.proceso_termino)
 
         self.proceso.start()
-        self.status_label.setText("angulo.py en ejecucion")
+        self.status_label.setText("Iniciando deteccion...")
         self.boton_iniciar.setEnabled(False)
         self.boton_detener.setEnabled(True)
 
@@ -504,7 +496,6 @@ class VentanaPrincipal(QWidget):
             f"[METRIC] frame={datos.get('frame')} "
             f"ear={self.formatear_float(datos.get('ear_smoothed'))} "
             f"thr={self.formatear_float(datos.get('ear_threshold'))} "
-            f"pitch={self.formatear_float(datos.get('pitch'))} "
             f"estado={datos.get('eye_state', '--')}"
         )
         frame_actual = datos.get('frame')
@@ -527,9 +518,8 @@ class VentanaPrincipal(QWidget):
             return "--"
 
     def actualizar_metricas(self, datos: dict) -> None:
-        """Actualiza el resumen visible con la informacion mas reciente."""
+        """Actualiza el resumen visible con la informacion mas reciente."""#informacion  de la parte superior de la ventana controles y funcionamiento de la frafica 
         eye_state = datos.get("eye_state")
-        inclinacion = datos.get("inclinacion")
         pitch = datos.get("pitch")
         closed_frames = datos.get("closed_frames")
         ear_smoothed = datos.get("ear_smoothed")
@@ -538,11 +528,6 @@ class VentanaPrincipal(QWidget):
         resumen: List[str] = []
         if eye_state:
             resumen.append(f"Ojos: {eye_state}")
-        if inclinacion:
-            resumen.append(f"Postura: {inclinacion}")
-        if pitch is not None:
-            resumen.append(f"Pitch: {self.formatear_float(pitch, 1)} deg")
-        
         if closed_frames is not None:
             try:
                 resumen.append(f"Cerrados: {int(closed_frames)}")
@@ -578,6 +563,10 @@ class VentanaPrincipal(QWidget):
             list(self.ear_series),
         )
 
+
+
+
+
     def mostrar_grafica(self) -> None:
         """Invoca la grafica de EAR si existen datos acumulados."""
         if not self.ear_series or not self.ear_baseline_series:
@@ -588,6 +577,9 @@ class VentanaPrincipal(QWidget):
         self._refrescar_grafica()
         if not self.timer_grafica.isActive():
             self.timer_grafica.start()
+#---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 
     def on_overlay_toggle(self, key: str, state: int) -> None:

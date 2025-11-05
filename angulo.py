@@ -148,11 +148,13 @@ RIGHT_EYE_HORIZONTAL_PAIR = (362, 263)
 
 
 
-CAMERA_INDEX = 1
+CAMERA_INDEX = 0
 CAPTURE_BACKEND = getattr(cv2, "CAP_DSHOW", None)
-CAMERA_TARGET_FPS = 30
-CAMERA_WIDTH = 640
-CAMERA_HEIGHT = 480
+CAMERA_TARGET_FPS = 60
+#tmaño de vista de camara
+CAMERA_WIDTH = 1040
+CAMERA_HEIGHT = 1040
+#-----------------------------------------------------------
 FOURCC_CODE = "MJPG"
 
 control_state = ensure_control_state_file()
@@ -334,9 +336,6 @@ with mp_face_mesh.FaceMesh(
                     "ear_threshold": float(ear_threshold),
                     "eye_state": eye_state,
                     "closed_frames": int(closed_frames),
-                    "pitch": float(pitch_angle_value) if pitch_angle_value is not None else None,
-                    "inclinacion": inclinacion_value,
-                    "eye_angle": float(eye_angle) if eye_angle is not None else None
                 }
                 print(json.dumps(metrics_payload), flush=True)
         else:

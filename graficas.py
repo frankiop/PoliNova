@@ -26,7 +26,7 @@ def grafica(ear_baseline_values, ear_values):
         plt.style.use("ggplot")
         plt.ion()
         _figure, ax = plt.subplots()
-        _line_baseline, = ax.plot(xs, baseline, "b-", label="EAR Threshold")
+        _line_baseline, = ax.plot(xs, baseline, "b-", label="Umbral ")
         _line_actual, = ax.plot(xs, actual, "r-", label="EAR Actual")
         ax.set_ylabel("EAR Value", fontsize=18)
         ax.set_xlim(0, max(xs[-1], 1))

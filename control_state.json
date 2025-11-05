@@ -2,7 +2,8 @@
   "recalibrate_token": 1,
   "overlays": {
     "landmarks": true,
-    "text": true
+    "text": true,
+    "geometry": true
   },
   "settings": {
     "ear_dynamic_ratio": 0.85,
