@@ -11,4 +11,4 @@ pip install mediapipe
 
 pip install PyQt5
 
-¿pip install matplotlib
+pip install matplotlib
